@@ -1,5 +1,6 @@
-<p>{svelteChild}</p>
+<p>{child}</p>
 
-<script>
-export const svelteChild = 'Child!';
+<script lang="ts">
+// props
+export let child: string;
 </script>
