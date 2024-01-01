@@ -1,7 +1,10 @@
 <p>{text}</p>
-<SvelteChild svelteChild="SvelteChild" />
+<SvelteChild {...props} />
 
-<script>
+<script lang="ts">
 import SvelteChild from '@/components/SvelteChild.svelte';
-export const text = 'Svelte!';
+export const text: string = 'Svelte!';
+export const props = {
+  child: 'Child!',
+};
 </script>
