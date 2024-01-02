@@ -1,5 +1,5 @@
 ---
-import Sample from '@/components/Sample.svelte'
+import Map from '@/components/Map.svelte';
 ---
 
-<Sample />
+<Map client:load GOOGLE_MAPS_API_KEY={import.meta.env.GOOGLE_MAPS_API_KEY} />
