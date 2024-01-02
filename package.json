@@ -7,15 +7,22 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "prepare": "husky install",
+    "test": ""
   },
   "dependencies": {
     "@astrojs/check": "^0.3.4",
     "@astrojs/svelte": "^5.0.3",
+    "@biomejs/biome": "^1.4.1",
+    "@googlemaps/js-api-loader": "^1.16.2",
     "astro": "^4.0.8",
-    "biome": "^0.3.3",
+    "beercss": "^3.4.11",
     "gh-pages": "^6.1.1",
     "svelte": "^4.2.8",
     "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/google.maps": "^3.54.10"
   }
 }

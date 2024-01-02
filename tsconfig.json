@@ -3,11 +3,10 @@
     "target": "esnext",
     "baseUrl": ".",
     "paths": {
-      "@/*":["./src/*"]
+      "@/*": ["./src/*"]
     },
+    "types": ["google.maps"]
   },
   "extends": "astro/tsconfigs/strict",
-  "include": [
-    "./src"
-  ]
+  "include": ["./src"]
 }
