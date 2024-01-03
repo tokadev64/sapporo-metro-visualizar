@@ -40,12 +40,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
           cache-dependency-path: pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
       - name: Build
         run: pnpm run build
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
