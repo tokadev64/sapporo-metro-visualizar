@@ -1,15 +1,16 @@
 // 市電
 //import { writable } from "svelte/store";
+import { atom } from 'nanostores';
+export const streetCarCount = atom<number>(0);
 
 const lineStreetCar = () => {
 	//const { subscribe } = writable(0);
-
 	const scale = <number>8;
 	const strokeColor = <string>'#eb6d73';
 	const path = <{ lat: number; lng: number }[]>[
-		{ lat: 43.057264909658194, lng: 141.3528651341244 }, // 狸小路駅
-		{ lat: 43.058800023332, lng: 141.35242580566089 },
-		{ lat: 43.05891863479601, lng: 141.3521595168347 },
+		//		{ lat: 43.057264909658194, lng: 141.3528651341244 }, // 狸小路駅
+		//		{ lat: 43.058800023332, lng: 141.35242580566089 },
+		//		{ lat: 43.05891863479601, lng: 141.3521595168347 },
 		{ lat: 43.05886874051356, lng: 141.35179930493052 }, // 西4丁目駅
 		{ lat: 43.05666763703006, lng: 141.3355486462268 },
 		{ lat: 43.05659285321848, lng: 141.33540534342595 },

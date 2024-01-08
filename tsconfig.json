@@ -5,7 +5,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["google.maps"]
+    "types": ["google", "google.maps"]
   },
   "extends": "astro/tsconfigs/strict",
   "include": ["./src"]
