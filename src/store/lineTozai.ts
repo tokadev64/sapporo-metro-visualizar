@@ -1,7 +1,7 @@
 // 東西線
 //import { writable } from "svelte/store";
 
-const lineEastWest = () => {
+const lineTouzai = () => {
 	//const { subscribe } = writable(0);
 
 	const scale = <number>8;
@@ -105,4 +105,4 @@ const lineEastWest = () => {
 	};
 };
 
-export const storeEastWest = lineEastWest();
+export const storeTozai = lineTouzai();

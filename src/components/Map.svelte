@@ -4,48 +4,49 @@
 import { onMount } from 'svelte';
 import * as pkg from '@googlemaps/js-api-loader';
 const { Loader } = pkg;
-import { storeStreetCar } from '@/store/lineStreetCar';
-import { storeEastWest } from '@/store/lineEastWest';
-import { storeNorthSouth } from '@/store/lineNorthSouth';
+
+import * as gmapStore from '@/store/gmap';
+import * as gmapUtils from '@/utils/gmap';
+import * as polylineUtils from '@/utils/polyline';
+
+import { storeStreetCar, streetCarCount } from '@/store/lineStreetCar';
+import { storeTozai } from '@/store/lineTozai';
+import { storeNamboku } from '@/store/lineNamboku';
 import { storeToho } from '@/store/lineToho';
 
+import { timeSchedules } from '@/components/time_schedule';
+
 const streetCar = storeStreetCar;
-const eastWest = storeEastWest;
-const northSouth = storeNorthSouth;
+const tozai = storeTozai;
+const namboku = storeNamboku;
 const toho = storeToho;
 
 export let GOOGLE_MAPS_API_KEY: string = '';
 
 onMount(async () => {
-  const loader = new Loader({
-    apiKey: GOOGLE_MAPS_API_KEY,
-    version: 'weekly',
-    libraries: ['places'],
-  });
-  const mapOptions = {
-	center: {
-		lat: 43.06865684773815,
-		lng: 141.35073019896953,
-	},
-	zoom: 15,
-};
-  const { Map, TransitLayer, Polyline } = await loader.importLibrary('maps');
-  const { SymbolPath } = await loader.importLibrary('core');
-  const map = new Map(
-    document.getElementById('map') as HTMLElement,
-    mapOptions,
-  );
-  const transitLayer = new TransitLayer();
-  transitLayer.setMap(map);
+  // map rendering.
+  await gmapUtils.initMap(GOOGLE_MAPS_API_KEY);
+  const loader: google.maps.Loader = await gmapStore.getLoader();
+  const gmap: google.maps.Map = await gmapStore.getGmap();
 
-  // 市電
+  // polyline rendering.
+  const { Polyline } = await loader.importLibrary('maps');
+  const { SymbolPath } = await loader.importLibrary('core');
+
+  // dev
   const circleSymbolStreetCar = {
     path: SymbolPath.CIRCLE,
     scale: streetCar.getScale(),
     strokeColor: streetCar.getStrokeColor(),
   };
-  const lineStreetCar = new Polyline({
-    path: streetCar.getPaths(),
+  const devPath = <{ lat: number; lng: number }[]>[
+		{ lat: 43.057264909658194, lng: 141.3528651341244 }, // 狸小路駅
+		{ lat: 43.058800023332, lng: 141.35242580566089 },
+		{ lat: 43.05891863479601, lng: 141.3521595168347 },
+		{ lat: 43.05886874051356, lng: 141.35179930493052 }, // 西4丁目駅
+	];
+  const polylineDev = new Polyline({
+    path: devPath,
     icons: [
       {
         icon: circleSymbolStreetCar,
@@ -53,70 +54,26 @@ onMount(async () => {
       },
     ],
     strokeColor: streetCar.getStrokeColor(),
-    map: map,
+    map: gmap,
   });
 
+  // 市電
+  const polylineStreetCar = await polylineUtils.renderPolyline(streetCar.getScale(), streetCar.getPaths(), streetCar.getStrokeColor());
   // 東西線
-  const circleSymbolEastWest = {
-    path: SymbolPath.CIRCLE,
-    scale: eastWest.getScale(),
-    strokeColor: eastWest.getStrokeColor(),
-  };
-  const lineEastWest = new Polyline({
-    path: eastWest.getPaths(),
-    icons: [
-      {
-        icon: circleSymbolEastWest,
-        offset: '100%',
-      },
-    ],
-    strokeColor: eastWest.getStrokeColor(),
-    map: map,
-  });
-
+  const polylineTozai = await polylineUtils.renderPolyline(tozai.getScale(), tozai.getPaths(), tozai.getStrokeColor());
   // 南北線
-  const circleSymbolNorthSouth = {
-    path: SymbolPath.CIRCLE,
-    scale: northSouth.getScale(),
-    strokeColor: northSouth.getStrokeColor(),
-  };
-  const lineNorthSouth = new Polyline({
-    path: northSouth.getPaths(),
-    icons: [
-      {
-        icon: circleSymbolNorthSouth,
-        offset: '100%',
-      },
-    ],
-    strokeColor: northSouth.getStrokeColor(),
-    map: map,
-  });
-
+  const polylineNamboku = await polylineUtils.renderPolyline(namboku.getScale(), namboku.getPaths(), namboku.getStrokeColor());
   // 東豊線
-  const circleSymbolToho = {
-    path: SymbolPath.CIRCLE,
-    scale: toho.getScale(),
-    strokeColor: toho.getStrokeColor(),
-  };
-  const lineToho = new Polyline({
-    path: toho.getPaths(),
-    icons: [
-      {
-        icon: circleSymbolToho,
-        offset: '100%',
-      },
-    ],
-    strokeColor: toho.getStrokeColor(),
-    map: map,
-  });
+  const polylineToho = await polylineUtils.renderPolyline(toho.getScale(), toho.getPaths(), toho.getStrokeColor());
 
-  animateCircle(lineStreetCar);
-  animateCircle(lineEastWest);
-  animateCircle(lineNorthSouth);
-  animateCircle(lineToho);
+  await polylineUtils.animateCircle(polylineDev, 1000);
+  await polylineUtils.animateCircle(polylineStreetCar, 1000);
+  await polylineUtils.animateCircle(polylineTozai, 1000);
+  await polylineUtils.animateCircle(polylineNamboku, 1000);
+  await polylineUtils.animateCircle(polylineToho, 1000);
 
   // dev: get latlng
-  map.addListener('click', (e: google.maps.MapMouseEvent) => {
+  gmap.addListener('click', (e: google.maps.MapMouseEvent) => {
     const lat = e.latLng?.lat();
     const lng = e.latLng?.lng();
     if (lat && lng) {
@@ -124,17 +81,6 @@ onMount(async () => {
     }
   });
 });
-
-const animateCircle = (line: google.maps.Polyline) => {
-  let count = 0;
-
-  window.setInterval(() => {
-    count = (count + 1) % 200;
-    const icons = line.get('icons');
-    icons[0].offset = count / 2 + '%';
-    line.set('icons', icons);
-  }, 500);
-}
 </script>
 
 <style>

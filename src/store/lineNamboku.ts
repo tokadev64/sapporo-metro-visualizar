@@ -1,7 +1,7 @@
 // 南北線
 //import { writable } from "svelte/store";
 
-const lineNorthSouth = () => {
+const lineNamboku = () => {
 	//const { subscribe } = writable(0);
 
 	const scale = <number>8;
@@ -69,4 +69,4 @@ const lineNorthSouth = () => {
 	};
 };
 
-export const storeNorthSouth = lineNorthSouth();
+export const storeNamboku = lineNamboku();
