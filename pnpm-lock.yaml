@@ -35,6 +35,9 @@ dependencies:
   typescript:
     specifier: ^5.4.5
     version: 5.4.5
+  vite:
+    specifier: ^5.2.9
+    version: 5.2.9
 
 devDependencies:
   '@types/google.maps':
